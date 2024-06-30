@@ -14,7 +14,7 @@ namespace LAB14_TINOCO_DAEA.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=LAB1504-17\\SQLEXPRESS;Initial Catalog=MarketDB;User Id=user;Password=user03; trustservercertificate=True");
+            optionsBuilder.UseSqlServer("Data Source=DESKTOP-F093S42;Initial Catalog=MarketDB;User Id=userTecsup;Password=userTecsup03; trustservercertificate=True");
         }
     }
 }

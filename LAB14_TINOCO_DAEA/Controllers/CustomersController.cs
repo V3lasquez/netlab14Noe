@@ -50,25 +50,35 @@ namespace LAB14_TINOCO_DAEA.Controllers
             return customer;
         }
 
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/customers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
+        public IActionResult PutCustomer(int id, [FromBody] CustomerUpdateNumeroDocumento request)
         {
-            if (id != customer.CustomerID)
+            if (id != request.CustomerID)
             {
                 return BadRequest();
             }
+
+            var customer = _context.Customers.Find(id);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            customer.DocumentNumber = request.DocumentNumber;
+            customer.FirstName = request.FirstName;
+            customer.LasttName = request.LasttName;
+            customer.Active = request.Active;
 
             _context.Entry(customer).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustomerExists(id))
+                if (!_context.Customers.Any(e => e.CustomerID == id))
                 {
                     return NotFound();
                 }
@@ -80,6 +90,12 @@ namespace LAB14_TINOCO_DAEA.Controllers
 
             return NoContent();
         }
+
+        private bool CustomerExists(int id)
+        {
+            return _context.Customers.Any(e => e.CustomerID == id);
+        }
+
 
         //POST: api/Customers
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -103,27 +119,17 @@ namespace LAB14_TINOCO_DAEA.Controllers
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public IActionResult Delete([FromBody] CustomerDeleteRequest request)
         {
-            if (_context.Customers == null)
-            {
-                return NotFound();
-            }
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = _context.Customers.Find(request.CustomerID);
             if (customer == null)
             {
                 return NotFound();
             }
-            customer.Active = false;
-            _context.Customers.Update(customer);
-            await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
-
-        private bool CustomerExists(int id)
-        {
-            return (_context.Customers?.Any(e => e.CustomerID == id)).GetValueOrDefault();
+            _context.Customers.Remove(customer);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }

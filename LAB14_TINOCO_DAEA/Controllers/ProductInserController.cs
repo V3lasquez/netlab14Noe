@@ -42,5 +42,24 @@ namespace NETLAB14_DAEA.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+        [HttpPut]
+        public IActionResult UpdatePrice(ProductUpdatePrice updateRequest)
+        {
+            var product = _context.Products.Find(updateRequest.ProductID);
+
+            if (product == null)
+            {
+                return NotFound(); // Manejo de error si el producto no existe
+            }
+
+            // Actualizar el precio del producto
+            product.Name = updateRequest.Name;
+            product.Price = updateRequest.Price;
+
+            _context.SaveChanges();
+
+            return NoContent(); // 204 No Content si la actualización fue exitosa
+        }
     }
 }
